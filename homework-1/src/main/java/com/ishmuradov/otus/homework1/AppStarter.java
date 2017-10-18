@@ -42,8 +42,6 @@ public class AppStarter {
 
     try {
       br = new BufferedReader(new InputStreamReader(System.in));
-      int lineNumber = 0;
-
       System.out.println("Print \"q\" to exit.");
 
       // main loop
@@ -52,27 +50,11 @@ public class AppStarter {
         System.out.println("Input line number: ");
         String input = br.readLine();
 
-        if ("q".equals(input)) {
-          System.out.println("Exit!");
-          System.exit(0);
-        }
-
         try {
-          lineNumber = Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-          System.out.println("Invalid line number: " + input);
-          continue;
-        }
-
-        String line = "";
-        try {
-          line = linesCache.get(lineNumber);
+          printLineByInputNumber(input);
         } catch (Exception e) {
-          System.out.println("Not found!");
           continue;
         }
-
-        System.out.println("Line: " + line);
       }
 
     } catch (IOException e) {
@@ -90,6 +72,32 @@ public class AppStarter {
 
   public static long getCacheSize() {
     return linesCache.size();
+  }
+  
+  public static void printLineByInputNumber(String lineNumberAsString) {
+    int lineNumber = 0;
+    
+    if ("q".equals(lineNumberAsString)) {
+      System.out.println("Exit!");
+      System.exit(0);
+    }
+
+    try {
+      lineNumber = Integer.parseInt(lineNumberAsString);
+    } catch (NumberFormatException e) {
+      System.out.println("Invalid line number: " + lineNumberAsString);
+      return;
+    }
+
+    String line = "";
+    try {
+      line = linesCache.get(lineNumber);
+    } catch (Exception e) {
+      System.out.println("Not found!");
+      return;
+    }
+
+    System.out.println(line);
   }
 
   public static void main(String[] args) {
