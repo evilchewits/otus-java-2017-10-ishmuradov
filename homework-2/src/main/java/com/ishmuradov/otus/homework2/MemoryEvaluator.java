@@ -4,8 +4,9 @@ import java.util.function.IntFunction;
 
 public class MemoryEvaluator {
   private IntFunction<Object> objectGenerator;
-  private int size = 10_000_000;
+  private int size = 100_000;
   Runtime runtime = Runtime.getRuntime();
+  private static Object tmp;
 
   public MemoryEvaluator(IntFunction<Object> objectGenerator) {
     super();
@@ -21,6 +22,9 @@ public class MemoryEvaluator {
       array[i] = objectGenerator.apply(i);
     }
 
-    return (runtime.totalMemory() - runtime.freeMemory() - mem) / size;
+    System.gc();
+    MemoryEvaluator.tmp = array; // use "array" somehow, otherwise it can be killed by garbage collector
+    
+    return Math.round((double) (runtime.totalMemory() - runtime.freeMemory() - mem) / size);
   }
 }
