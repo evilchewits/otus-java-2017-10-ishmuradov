@@ -2,6 +2,12 @@ package com.ishmuradov.otus.homework2;
 
 import java.util.function.IntFunction;
 
+/**
+ * -XX:[+|-]UseCompressedOops -Xmx64m -Xms64m -XX:[+|-]PrintGCDetails
+ * 
+ * @author Ishmuradov
+ *
+ */
 public class App {
 
   public static void main(String[] args) {                                    /* if -XX:+UseCompressedOops (compressing is enabled) */
