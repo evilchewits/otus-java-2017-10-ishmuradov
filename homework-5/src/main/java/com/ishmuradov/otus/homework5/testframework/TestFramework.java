@@ -1,12 +1,22 @@
 package com.ishmuradov.otus.homework5.testframework;
 
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.common.reflect.ClassPath;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 public class TestFramework {
+  
+  public static final String TEST_CLASSES_PATH = "target/test-classes";
 
   /**
    * Run tests in a class or package
@@ -19,33 +29,10 @@ public class TestFramework {
    *   3. calls all methods annotated with @After for current class (order of invocation is not determined),
    * 
    * @param string - fully qualified name of the class or package
-   * @throws ReflectiveOperationException 
+   * @throws ClassNotFoundException 
    */
-  public static void run(String classOrPackageName) throws ReflectiveOperationException {
-    final Set<Class<?>> classes = new HashSet<>();
-    
-    // Find a single class or all classes in the package
-    try {
-      classes.add(Class.forName(classOrPackageName));
-    } catch (ClassNotFoundException cnfe) {
-      try {
-        final ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        for (final ClassPath.ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
-          if (info.getName().startsWith(classOrPackageName + ".")) {
-            classes.add(info.load());
-          }
-        }
-      } catch (Exception e) {
-        throw new ReflectiveOperationException(e);
-      }
-    }
-    
-    if (classes.size() == 0) {
-      throw new ClassNotFoundException("Class or package not found: " + classOrPackageName);
-    }
-    
-    // Invoke methods annotated by @Before, @Test, @After in each class
+  public static void runTests(String classOrPackageName) throws ClassNotFoundException {
+    final Set<Class<?>> classes = findClasses(classOrPackageName);
     int testCounter = 0;
     
     for (Class<?> clazz : classes) {
@@ -81,6 +68,53 @@ public class TestFramework {
       System.out.println("No test found in class or package: " + classOrPackageName);
     }
  
+  }
+  
+  /**
+   * Finds classes in test packages (those that are put to
+   * "target/test-classes" with default Maven configuration).
+   * 
+   * @param classOrPackageName
+   * @return
+   * @throws ClassNotFoundException
+   */
+  public static Set<Class<?>> findClasses(String classOrPackageName) throws ClassNotFoundException {
+    final Set<Class<?>> foundClasses;
+    final Set<Class<?>> classes = new HashSet<>();
+    
+    URL testClassesURL = null;
+    try {
+      testClassesURL = Paths.get(TEST_CLASSES_PATH).toUri().toURL();
+    } catch (IllegalArgumentException | NullPointerException | MalformedURLException e) {
+      throw new RuntimeException("Bad/missing TEST_CLASSES_PATH: " + TEST_CLASSES_PATH);
+    }
+
+    URLClassLoader urlClassLoader = URLClassLoader.newInstance(new URL[] { testClassesURL }, 
+       ClasspathHelper.staticClassLoader());
+    String parentPackage = (classOrPackageName.lastIndexOf(".") != -1)
+        ? classOrPackageName.substring(0, classOrPackageName.lastIndexOf("."))
+        : "";
+
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .addUrls(ClasspathHelper.forClassLoader(urlClassLoader))
+        .addClassLoader(urlClassLoader)
+        .setScanners(new SubTypesScanner(false))
+        .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(parentPackage))));
+    
+    foundClasses = reflections.getSubTypesOf(Object.class);
+
+    for (Class<?> clazz : foundClasses) {
+      if (clazz.getName().equals(classOrPackageName) || clazz.getName().startsWith(classOrPackageName)
+          && clazz.getName().substring(classOrPackageName.length(), clazz.getName().length()).indexOf(".") != -1) {
+        classes.add(clazz);
+      }
+    }
+
+    if (classes.size() == 0) {
+      throw new ClassNotFoundException("Class or package not found: " + classOrPackageName);
+    }
+    
+    return classes;
   }
 
 }
