@@ -99,16 +99,8 @@ class ReflectionHelper {
      * @return
      */
     @SuppressWarnings("unchecked")
-    static Set<Method> getAnnotatedMethods(Class<?> type, String annotationName) {
-        return Stream.of(type.getMethods()).filter(
-          m -> {
-            try {
-              return m.isAnnotationPresent((Class<Annotation>) Class.forName(annotationName));
-            } catch (NullPointerException | ClassNotFoundException | ClassCastException e) {
-              e.printStackTrace();
-            }
-            return false;
-          }
-        ).collect(Collectors.toSet());
+    static Set<Method> getAnnotatedMethods(Class<?> type, String annotationName) throws ClassNotFoundException {
+        final Class<Annotation> clazz = (Class<Annotation>) Class.forName(annotationName);
+        return Stream.of(type.getMethods()).filter(m -> m.isAnnotationPresent(clazz)).collect(Collectors.toSet());
     }
 }
