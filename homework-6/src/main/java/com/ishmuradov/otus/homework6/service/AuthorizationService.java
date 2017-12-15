@@ -1,6 +1,12 @@
 package com.ishmuradov.otus.homework6.service;
 
+import java.math.BigInteger;
+import java.util.Arrays;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.ishmuradov.otus.homework6.Account;
+import com.ishmuradov.otus.homework6.Permission;
 import com.ishmuradov.otus.homework6.util.AccessDeniedException;
 
 /**
@@ -12,12 +18,10 @@ import com.ishmuradov.otus.homework6.util.AccessDeniedException;
 public class AuthorizationService {
   private static volatile AuthorizationService instance;
   AccountService accountService = AccountService.getInstance();
+  ListMultimap<BigInteger, Permission> permissionMap;
   
-  public static enum Permission {
-    WITHDRAW, DEPOSIT, CHECK_BALANCE
-  }
-
   private AuthorizationService() {
+    permissionMap = ArrayListMultimap.create();
   }
 
   public static AuthorizationService getInstance() {
@@ -33,12 +37,20 @@ public class AuthorizationService {
     return localInstance;
   }
   
-  public void checkPermission(Account account, Permission permission) throws AccessDeniedException {
-    boolean isAuthorized = account != null && permission != null
-        && account.getPermissions().contains(permission);
+  public synchronized void checkPermission(Account account, Permission permission) throws AccessDeniedException {
+    Account registeredAccount = accountService.getAccount(account.getId());
+    boolean isAuthorized = registeredAccount != null && permission != null
+        && permissionMap.containsEntry(registeredAccount.getId(), permission);
     if (!isAuthorized) {
       throw new AccessDeniedException("You do not have the required permission: " + permission.toString());
     }
+  }
+
+  public synchronized boolean grantPermissions(Account account, Permission... permissions) {
+    if (accountService.getAccount(account.getId()) == null) {
+      return false;
+    }
+    return permissionMap.putAll(account.getId(), Arrays.asList(permissions));
   }
   
 }

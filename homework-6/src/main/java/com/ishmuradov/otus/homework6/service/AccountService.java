@@ -1,6 +1,7 @@
 package com.ishmuradov.otus.homework6.service;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.ishmuradov.otus.homework6.Account;
@@ -13,9 +14,10 @@ import com.ishmuradov.otus.homework6.Account;
  */
 public class AccountService {
   private static volatile AccountService instance;
-  private Map<BigInteger, Account> accounts;
+  private Map<BigInteger, Account> accountRegistry;
 
   private AccountService() {
+    accountRegistry = new HashMap<>();
   }
 
   public static AccountService getInstance() {
@@ -31,12 +33,14 @@ public class AccountService {
     return localInstance;
   }
   
-  public void setAccounts(Map<BigInteger, Account> accounts) {
-    this.accounts = accounts;
+  public synchronized void registerAccounts(Account... accounts) {
+    for (Account account : accounts) {
+      accountRegistry.put(account.getId(), account);
+    }
   }
   
-  public Account getAccount(BigInteger id) {
-    return accounts.get(id);
+  public synchronized Account getAccount(BigInteger id) {
+    return accountRegistry.get(id);
   }
 
 }

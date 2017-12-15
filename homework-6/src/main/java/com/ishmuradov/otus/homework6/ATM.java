@@ -1,29 +1,25 @@
 package com.ishmuradov.otus.homework6;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ishmuradov.otus.homework6.service.AuthenticationService;
 import com.ishmuradov.otus.homework6.service.AuthorizationService;
-import com.ishmuradov.otus.homework6.service.AuthorizationService.Permission;
 import com.ishmuradov.otus.homework6.util.AuthenticationException;
 import com.ishmuradov.otus.homework6.util.CellOverflowException;
 
-public class ATM implements I_ATM {
+public class ATM implements IATM {
   private Account currentAccount;
-  private Map<Denomination, Integer> withdrawCells;
-  private Map<Denomination, Integer> depositCells;
-  private Map<Denomination, Integer> virtualCells;
+  private List<Cell> withdrawCells;
+  private List<Cell> depositCells;
   private AuthenticationService authenticationService;
   private AuthorizationService authorizationService;
-
-  public ATM(Map<Denomination, Integer> withdrawCells, Map<Denomination, Integer> depositCells) {
+  
+  
+  public ATM(List<Cell> withdrawCells, List<Cell> depositCells) {
     this.withdrawCells = withdrawCells;
     this.depositCells = depositCells;
     this.authenticationService = AuthenticationService.getInstance();
@@ -33,56 +29,69 @@ public class ATM implements I_ATM {
   @Override
   public void withdraw(long ammount) {
     checkPermission(currentAccount, Permission.WITHDRAW);
-    resetVirtualCells();
+    resetReserved(withdrawCells);
 
-    List<Denomination> banknotes = Arrays.asList(Denomination.values());
-    Collections.sort(banknotes, Comparator.comparing(Denomination::getValue).reversed());
-    long minValue = banknotes.get(banknotes.size() - 1).getValue();
+    Collections.sort(withdrawCells,
+        (c1, c2) -> Long.valueOf(c2.getDenomination().getValue()).compareTo(c1.getDenomination().getValue()));
+    long minValue = withdrawCells.get(withdrawCells.size() - 1).getDenomination().getValue();
     
     if (currentAccount.getBalance() < ammount) {
-      System.out.println("Not enough money on the account");
+      System.out.println("[WARNING] Not enough money on the account");
       return;
     }
     
     if (ammount % minValue != 0) {
-      System.out.println("The sum must be devisible by " + minValue);
+      System.out.println("[WARNING] The sum must be devisible by " + minValue);
       return;
     }
     
     long sum = 0;
-    for (Denomination denomination : banknotes) {
-      while (withdrawCells.get(denomination) - virtualCells.get(denomination) > 0
-          && sum + denomination.getValue() <= ammount) {
-        sum += denomination.getValue();
-        virtualCells.put(denomination, virtualCells.get(denomination).intValue() + 1);
+    for (Cell cell : withdrawCells) {
+      while (cell.getAmmount() - cell.getReserved() > 0
+          && sum + cell.getDenomination().getValue() <= ammount) {
+        sum += cell.getDenomination().getValue();
+        cell.setReserved(cell.getReserved() + 1);
       }
     }
     
     if (sum != ammount) {
-      System.out.println("The requested sum could not be issued");
+      System.out.println("[WARNING] The requested sum could not be issued");
       return;
     }
 
-    virtualCells.forEach((k, v) -> withdrawCells.put(k, withdrawCells.get(k).intValue() - v));
+    withdrawCells.forEach(c -> {
+      c.setAmmount(c.getAmmount() - c.getReserved());
+      c.setReserved(0);
+    });
     currentAccount.setBalance(currentAccount.getBalance() - sum);
   }
   
   @Override
   public void deposit(Map<Denomination, Integer> money) {
     checkPermission(currentAccount, Permission.DEPOSIT);
-    resetVirtualCells();
+    resetReserved(depositCells);
     
     long sum = 0;
     for (Entry<Denomination, Integer> entry : money.entrySet()) {
-      if (depositCells.get(entry.getKey()).intValue() + entry.getValue() > CELL_SIZE) {
-        throw new CellOverflowException("Could not accept money: cell is full");
+      for (Cell cell : depositCells) {
+        if (!cell.getDenomination().equals(entry.getKey())) {
+          continue;
+        }
+        
+        if (cell.getAmmount() + entry.getValue() > Cell.SIZE) {
+          throw new CellOverflowException("Could not accept money: cell is full");
+        }
+        
+        sum += entry.getKey().getValue() * entry.getValue();
+        cell.setReserved(entry.getValue());
       }
-      
-      sum += entry.getKey().getValue() * entry.getValue();
-      virtualCells.put(entry.getKey(), entry.getValue());
+
     }
     
-    virtualCells.forEach((k, v) -> depositCells.put(k, depositCells.get(k).intValue() + v));
+    depositCells.forEach(c -> {
+      c.setAmmount(c.getAmmount() + c.getReserved());
+      c.setReserved(0);
+    });
     currentAccount.setBalance(currentAccount.getBalance() + sum);
   }
   
@@ -93,7 +102,6 @@ public class ATM implements I_ATM {
     return currentAccount.getBalance();
   }
   
-  @Override
   public void authenticate(BigInteger id, String pin) {
     if (currentAccount != null) {
       throw new AuthenticationException("ATM is already in use");
@@ -106,33 +114,27 @@ public class ATM implements I_ATM {
     currentAccount = null;
   }
   
-  @Override
   public void checkPermission(Account account, Permission permission) {
     authorizationService.checkPermission(account, permission);
   }
   
-  private void resetVirtualCells() {
-    if (virtualCells == null) {
-      virtualCells = new HashMap<>();
-    }
-    for (Denomination denomination : Denomination.values()) {
-      virtualCells.put(denomination, 0);
-    }
+  private void resetReserved(List<Cell> cells) {
+    cells.forEach(c -> c.setReserved(0));
   }
 
-  public Map<Denomination, Integer> getWithdrawCells() {
+  public List<Cell> getWithdrawCells() {
     return withdrawCells;
   }
 
-  public void setWithdrawCells(Map<Denomination, Integer> withdrawCells) {
+  public void setWithdrawCells(List<Cell> withdrawCells) {
     this.withdrawCells = withdrawCells;
   }
 
-  public Map<Denomination, Integer> getDepositCells() {
+  public List<Cell> getDepositCells() {
     return depositCells;
   }
 
-  public void setDepositCells(Map<Denomination, Integer> depositCells) {
+  public void setDepositCells(List<Cell> depositCells) {
     this.depositCells = depositCells;
   }
 

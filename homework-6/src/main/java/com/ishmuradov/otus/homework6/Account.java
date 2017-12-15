@@ -3,21 +3,17 @@ package com.ishmuradov.otus.homework6;
 import java.math.BigInteger;
 import java.util.List;
 
-import com.ishmuradov.otus.homework6.service.AuthorizationService.Permission;
-
 public class Account {
 
   private BigInteger id;
   private List<String> pins;
   private long balance;
-  private List<Permission> permissions;
   
-  public Account(BigInteger id, List<String> pins, long balance, List<Permission> permissions) {
+  public Account(BigInteger id, List<String> pins, long balance) {
     super();
     this.id = id;
     this.pins = pins;
     this.balance = balance;
-    this.permissions = permissions;
   }
   
   public BigInteger getId() {
@@ -42,14 +38,6 @@ public class Account {
   
   public void setBalance(long balance) {
     this.balance = balance;
-  }
-
-  public List<Permission> getPermissions() {
-    return permissions;
-  }
-
-  public void setPermissions(List<Permission> permissions) {
-    this.permissions = permissions;
   }
 
 }
