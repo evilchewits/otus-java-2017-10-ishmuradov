@@ -1,6 +1,6 @@
 package com.ishmuradov.otus.homework6;
 
-public class Cell {
+public class Cell implements Cloneable {
   public static final int SIZE = 10_000;
   
   private Denomination denomination;
@@ -38,8 +38,18 @@ public class Cell {
     this.reserved = reserved;
   }
   
+  @Override
   public String toString() {
     return String.join("", "[", getDenomination() + "]: ", String.valueOf(getAmmount()), " ");
-}
+  }
+  
+  @Override
+  public Cell clone() throws CloneNotSupportedException {
+    Cell obj = (Cell) super.clone();
+    obj.denomination = this.denomination;
+    obj.ammount = this.ammount;
+    obj.reserved = this.reserved;
+    return obj;
+  }
   
 }

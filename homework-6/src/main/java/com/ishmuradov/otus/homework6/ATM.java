@@ -1,6 +1,7 @@
 package com.ishmuradov.otus.homework6;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,13 @@ import com.ishmuradov.otus.homework6.service.AuthorizationService;
 import com.ishmuradov.otus.homework6.util.AuthenticationException;
 import com.ishmuradov.otus.homework6.util.CellOverflowException;
 
-public class ATM implements IATM {
+/**
+ * Patterns: Observer, Memento
+ * 
+ * @author Ishmuradov
+ *
+ */
+public class ATM implements IATM, Observer {
   private Account currentAccount;
   private List<Cell> withdrawCells;
   private List<Cell> depositCells;
@@ -137,5 +144,50 @@ public class ATM implements IATM {
   public void setDepositCells(List<Cell> depositCells) {
     this.depositCells = depositCells;
   }
+  
+  public long getATMBalance() {
+    long withdrawCellsBalance = withdrawCells.stream().mapToLong(c -> c.getDenomination().getValue() * c.getAmmount())
+        .sum();
+    long depositCellsBalance = depositCells.stream().mapToLong(c -> c.getDenomination().getValue() * c.getAmmount())
+        .sum();
 
+    return withdrawCellsBalance + depositCellsBalance;
+  }
+
+  @Override
+  public void notify(Event event) {
+    if (event.getName().equals("END_OF_DAY_EVENT")) {
+      restoreFromMemento(((EndOfDayEvent) event).getMemento());
+    }
+  }
+
+  public CellStateMemento saveToMemento() {
+    return new CellStateMemento(withdrawCells, depositCells);
+  }
+  
+  public void restoreFromMemento(CellStateMemento memento) {
+    this.withdrawCells = memento.withdrawCells;
+    this.depositCells = memento.depositCells;
+  }
+
+  public class CellStateMemento {
+    private List<Cell> withdrawCells;
+    private List<Cell> depositCells;
+    
+    public CellStateMemento(List<Cell> withdrawCells, List<Cell> depositCells) {
+      try {
+        this.withdrawCells = new ArrayList<>();
+        for (Cell c : withdrawCells) {
+          this.withdrawCells.add(c.clone());
+        }
+        this.depositCells = new ArrayList<>();
+        for (Cell c : depositCells) {
+          this.depositCells.add(c.clone());
+        }
+      } catch (CloneNotSupportedException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
 }
