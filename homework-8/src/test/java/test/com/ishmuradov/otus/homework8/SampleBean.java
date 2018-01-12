@@ -1,22 +1,27 @@
-package com.ishmuradov.otus.homework8;
+package test.com.ishmuradov.otus.homework8;
 
 import java.util.List;
 
-public class MyBean {
+public class SampleBean {
   private int intVar;
+  private char charVal;
+  private Boolean boolVar;
   private String strVar;
-  private MyBean objVar;
+  private SampleBean objVar;
   private int[] intArr;
-  private MyBean[] objArr;
+  private SampleBean[] objArr;
   private List<String> strList;
 
-  public MyBean() {
+  public SampleBean() {
     super();
   }
 
-  public MyBean(int intVar, String strVar, MyBean objVar, int[] intArr, MyBean[] objArr, List<String> strList) {
+  public SampleBean(int intVar, char charVar, Boolean boolVar, String strVar, SampleBean objVar, int[] intArr,
+      SampleBean[] objArr, List<String> strList) {
     super();
     this.intVar = intVar;
+    this.charVal = charVar;
+    this.boolVar = boolVar;
     this.strVar = strVar;
     this.objVar = objVar;
     this.intArr = intArr;
@@ -32,6 +37,22 @@ public class MyBean {
     this.intVar = intVar;
   }
 
+  public char getCharVal() {
+    return charVal;
+  }
+
+  public void setCharVal(char charVal) {
+    this.charVal = charVal;
+  }
+
+  public Boolean getBoolVar() {
+    return boolVar;
+  }
+
+  public void setBoolVar(Boolean boolVar) {
+    this.boolVar = boolVar;
+  }
+
   public String getStrVar() {
     return strVar;
   }
@@ -40,11 +61,11 @@ public class MyBean {
     this.strVar = strVar;
   }
 
-  public MyBean getObjVar() {
+  public SampleBean getObjVar() {
     return objVar;
   }
 
-  public void setObjVar(MyBean objVar) {
+  public void setObjVar(SampleBean objVar) {
     this.objVar = objVar;
   }
 
@@ -56,11 +77,11 @@ public class MyBean {
     this.intArr = intArr;
   }
 
-  public MyBean[] getObjArr() {
+  public SampleBean[] getObjArr() {
     return objArr;
   }
 
-  public void setObjArr(MyBean[] objArr) {
+  public void setObjArr(SampleBean[] objArr) {
     this.objArr = objArr;
   }
 
