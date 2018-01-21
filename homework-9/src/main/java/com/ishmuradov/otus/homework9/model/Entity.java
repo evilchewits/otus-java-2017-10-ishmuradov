@@ -1,4 +1,4 @@
-package com.ishmuradov.otus.homework9;
+package com.ishmuradov.otus.homework9.model;
 
 public class Entity {
 
