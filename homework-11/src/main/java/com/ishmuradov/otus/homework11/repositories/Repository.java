@@ -6,7 +6,7 @@ import com.ishmuradov.otus.homework11.model.Entity;
 
 public interface Repository<T extends Entity> {
 
-  void save(T entity) throws SQLException;
+  T save(T entity) throws SQLException;
 
   T load(long id) throws SQLException;
 

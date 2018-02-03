@@ -9,10 +9,14 @@
       <property name="hibernate.connection.url" value="jdbc:h2:mem:homework11;DB_CLOSE_DELAY=-1" />
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
       <property name="hibernate.hbm2ddl.auto" value="create" />
-      <property name="hibernate.show_sql" value="true" />
+      <property name="hibernate.show_sql" value="false" />
       <property name="hibernate.format_sql" value="true" />
       <property name="hibernate.connection.username" value="sa" />
       <property name="hibernate.connection.password" value="" />
+      <!-- Avoid using this in production: it opens a hidden transaction 
+        each time the lazy-loaded field is requested -->
+      <property name="hibernate.enable_lazy_load_no_trans" value="true" />
+      <property name="hibernate.generate_statistics" value="true" />
     </properties>
   </persistence-unit>
 

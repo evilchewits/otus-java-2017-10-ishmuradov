@@ -7,8 +7,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.9</maven.compiler.source>
-    <maven.compiler.target>1.9</maven.compiler.target>
+    <maven.compiler.source>9</maven.compiler.source>
+    <maven.compiler.target>9</maven.compiler.target>
     <junit.version>4.12</junit.version>
   </properties>
 
@@ -30,6 +30,18 @@
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.4.196</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.25</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.6</version>
     </dependency>
 
   </dependencies>

@@ -4,4 +4,8 @@ import com.ishmuradov.otus.homework11.model.User;
 
 public interface UserRepository extends Repository<User> {
 
+  long getSaveCount();
+
+  long getLoadCount();
+
 }

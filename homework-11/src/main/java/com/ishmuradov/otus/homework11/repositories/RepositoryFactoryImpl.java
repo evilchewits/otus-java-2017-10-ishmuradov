@@ -1,6 +1,5 @@
 package com.ishmuradov.otus.homework11.repositories;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -15,8 +14,17 @@ public class RepositoryFactoryImpl extends RepositoryFactory {
 
   @Override
   public UserRepository getUserRepository() {
-    EntityManager em = emf.createEntityManager();
-    return new UserRepositoryImpl(em);
+    return new UserRepositoryImpl(emf);
+  }
+
+  @Override
+  public AddressRepository getAddressRepository() {
+    return new AddressRepositoryImpl(emf);
+  }
+
+  @Override
+  public PhoneRepository getPhoneRepository() {
+    return new PhoneRepositoryImpl(emf);
   }
 
 }

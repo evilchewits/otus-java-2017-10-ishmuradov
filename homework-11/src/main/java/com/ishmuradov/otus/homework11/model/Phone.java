@@ -10,7 +10,7 @@ public class Phone extends Entity {
 
   @Column(name = "NUMBER")
   private String number;
-  
+
   @ManyToOne
   private User user;
 
@@ -29,6 +29,14 @@ public class Phone extends Entity {
 
   public void setNumber(String number) {
     this.number = number;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   @Override

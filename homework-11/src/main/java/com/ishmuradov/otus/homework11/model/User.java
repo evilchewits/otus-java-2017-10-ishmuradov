@@ -28,11 +28,23 @@ public class User extends Entity {
     super();
   }
 
+  public User(String name, int age, Address address) {
+    super();
+    this.name = name;
+    this.age = age;
+    this.address = address;
+  }
+  
   public User(String name, int age, Address address, List<Phone> phones) {
     super();
     this.name = name;
     this.age = age;
     this.address = address;
+    if (phones != null) {
+      for (Phone phone : phones) {
+        phone.setUser(this);
+      }
+    }
     this.phones = phones;
   }
 
@@ -65,6 +77,11 @@ public class User extends Entity {
   }
 
   public void setPhones(List<Phone> phones) {
+    if (phones != null) {
+      for (Phone phone : phones) {
+        phone.setUser(this);
+      }
+    }
     this.phones = phones;
   }
 
