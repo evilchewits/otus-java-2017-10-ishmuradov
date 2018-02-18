@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Login</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+	<div class="top">
+		<a href="login">Login</a> <a href="admin">Admin</a>
+	</div>
+	<div class="login">
+		<#if isAuthenticated>
+		<div>You have successfully logged in!</div>
+		<form action="/logout" method="POST">
+			<input type="submit" value="Log out">
+		</form>
+		<#else>
+		<div>Hint: username: admin; password: admin</div>
+		<form action="/login" method="POST">
+			Username: <input type="text" name="username"> <br />
+			Password: <input type="password" name="password"> <br /> <input
+				type="submit" value="Log in">
+		</form></#if>
+	</div>
+</body>
+</html>
