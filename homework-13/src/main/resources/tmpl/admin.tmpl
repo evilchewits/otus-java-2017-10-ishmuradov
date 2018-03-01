@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Admin</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+	<div class="top">
+		<a href="${contextPath}/login">Login</a> <a href="${contextPath}/admin">Admin</a>
+	</div>
+	
+	<h1>Cache params</h1>
+	<#list cacheParams?keys as key>
+	<p>${key} : ${cacheParams[key]}</p>
+	</#list>
+
+	<h1>Statistics</h1>
+	<#list statistics?keys as key>
+	<p>${key} : ${statistics[key]}</p>
+	</#list>
+
+</body>
+</html>

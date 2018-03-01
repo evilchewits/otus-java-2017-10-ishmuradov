@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Login</title>
+<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+	<div class="top">
+		<a href="${contextPath}/login">Login</a> <a href="${contextPath}/admin">Admin</a>
+	</div>
+	<div class="login">
+		<#if isAuthenticated>
+		<div>You have successfully logged in!</div>
+		<form action="${contextPath}/logout" method="POST">
+			<input type="submit" value="Log out">
+		</form>
+		<#else>
+		<div>Hint: username: admin; password: admin</div>
+		<form action="${contextPath}/login" method="POST">
+			Username: <input type="text" name="username"> <br />
+			Password: <input type="password" name="password"> <br /> <input
+				type="submit" value="Log in">
+		</form></#if>
+	</div>
+</body>
+</html>

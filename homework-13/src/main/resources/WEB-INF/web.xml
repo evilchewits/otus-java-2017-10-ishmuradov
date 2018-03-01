@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+
+  <display-name>Homework 13 (spring)</display-name>
+  <description>Homework 13 by Alexander Ishmuradov</description>
+
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/WEB-INF/applicationContext.xml
+    </param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener
+    </listener-class>
+  </listener>
+<!--
+  <listener>
+    <listener-class>com.ishmuradov.otus.homework13.AppServletContextListener
+    </listener-class>
+  </listener>
+-->
+  <filter>
+    <filter-name>authenticationFilter</filter-name>
+    <filter-class>com.ishmuradov.otus.homework13.servlet.AuthenticationFilter
+    </filter-class>
+  </filter>
+
+  <servlet>
+    <servlet-name>loginServlet</servlet-name>
+    <servlet-class>com.ishmuradov.otus.homework13.servlet.LoginServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>logoutServlet</servlet-name>
+    <servlet-class>com.ishmuradov.otus.homework13.servlet.LogoutServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>adminServlet</servlet-name>
+    <servlet-class>com.ishmuradov.otus.homework13.servlet.AdminServlet
+    </servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>loginServlet</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>logoutServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>adminServlet</servlet-name>
+    <url-pattern>/admin</url-pattern>
+  </servlet-mapping>
+
+  <filter-mapping>
+    <filter-name>authenticationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+
+</web-app>
