@@ -2,44 +2,19 @@ package com.ishmuradov.otus.homework13;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-//@Configuration
-//@ComponentScan
+@WebListener
 public class AppServletContextListener implements ServletContextListener {
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    ServletContextListener.super.contextInitialized(sce);
-
-    //System.out.println(userService);
-    /*
-    int size = UserService.CACHE_SIZE;
-    int doubleSize = size * 2;
-    
-    try {
-//      userService = new UserService();
-//      
-      //System.out.println(userService.countUsers());
-
-      for (int i = 1; i <= doubleSize; i++) {
-        userService.addUser(new User("User " + i, 20, new Address("pr. Lenina", i), null));
-      }
-      
-      //System.out.println(userService.countUsers());
-      
-      for (int i = 1; i <= doubleSize; i++) {
-        userService.printUser((int) (Math.random() * doubleSize + 1));
-      }
-      
-      userService.printStatistics();
-      
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-    */
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+    sce.getServletContext().setAttribute("applicationContext", ctx);
+    // Initialize users and run infinite loop for getting them
+    ctx.getBean("appWorker", AppWorker.class).start();
   }
 
 }

@@ -26,6 +26,7 @@ public class UserService {
   private UserRepository userRepository;
 
   public UserService() {
+    super();
     log.info("Instantiating UserService");
     RepositoryFactory rf = RepositoryFactory.getRepositoryFactory();
     userRepository = rf.getUserRepository();

@@ -5,18 +5,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.ishmuradov.otus.homework13.services.UserService;
 
 @SuppressWarnings("serial")
-@Component
-public class AdminServlet extends HttpServlet {
+@WebServlet("/admin")
+public class AdminServlet extends AbstractServlet {
 
   private static final String ADMIN_PAGE_TEMPLATE = "admin.tmpl";
   

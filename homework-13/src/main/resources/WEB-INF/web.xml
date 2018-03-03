@@ -5,43 +5,44 @@
   <display-name>Homework 13 (spring)</display-name>
   <description>Homework 13 by Alexander Ishmuradov</description>
 
+  <!-- I use AppCofig class marked with @Configuration annotation
+  instead of applicationContext.xml and @ComponentScan annotation
+  instead of beans definition in applicationContext.xml -->
+  <!--
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/classes/WEB-INF/applicationContext.xml
     </param-value>
   </context-param>
+  -->
 
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener
-    </listener-class>
-  </listener>
-<!--
+  <!-- I use @WebListener annotation instead of this -->
+  <!--
   <listener>
     <listener-class>com.ishmuradov.otus.homework13.AppServletContextListener
     </listener-class>
   </listener>
--->
+  -->
+
+  <!-- I use @WebFilter annotation instead of this -->
+  <!--
   <filter>
     <filter-name>authenticationFilter</filter-name>
     <filter-class>com.ishmuradov.otus.homework13.servlet.AuthenticationFilter
     </filter-class>
   </filter>
-
+  
+  <filter-mapping>
+    <filter-name>authenticationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  -->
+ 
+  <!-- I use @WebServlet annotation instead of this -->
+  <!--
   <servlet>
     <servlet-name>loginServlet</servlet-name>
     <servlet-class>com.ishmuradov.otus.homework13.servlet.LoginServlet
-    </servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>logoutServlet</servlet-name>
-    <servlet-class>com.ishmuradov.otus.homework13.servlet.LogoutServlet
-    </servlet-class>
-  </servlet>
-
-  <servlet>
-    <servlet-name>adminServlet</servlet-name>
-    <servlet-class>com.ishmuradov.otus.homework13.servlet.AdminServlet
     </servlet-class>
   </servlet>
 
@@ -50,20 +51,28 @@
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>logoutServlet</servlet-name>
+    <servlet-class>com.ishmuradov.otus.homework13.servlet.LogoutServlet
+    </servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>logoutServlet</servlet-name>
     <url-pattern>/logout</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>adminServlet</servlet-name>
+    <servlet-class>com.ishmuradov.otus.homework13.servlet.AdminServlet
+    </servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>adminServlet</servlet-name>
     <url-pattern>/admin</url-pattern>
   </servlet-mapping>
-
-  <filter-mapping>
-    <filter-name>authenticationFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  -->
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

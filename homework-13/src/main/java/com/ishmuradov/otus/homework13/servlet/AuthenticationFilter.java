@@ -9,12 +9,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+@WebFilter("/*")
 public class AuthenticationFilter implements Filter {
   final static Logger log = Logger.getLogger(AuthenticationFilter.class);
 
