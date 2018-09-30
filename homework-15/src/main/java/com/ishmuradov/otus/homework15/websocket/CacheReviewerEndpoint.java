@@ -12,14 +12,17 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.log4j.Logger;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import com.google.gson.Gson;
+import com.ishmuradov.otus.homework15.FrontendService;
+import com.ishmuradov.otus.homework15.MessageSystemContext;
+import com.ishmuradov.otus.homework15.MsgGetCacheStatistics;
 import com.ishmuradov.otus.homework15.ServletAwareConfig;
-import com.ishmuradov.otus.homework15.services.UserService;
+import com.ishmuradov.otus.homework15.messagesystem.Address;
+import com.ishmuradov.otus.homework15.messagesystem.Message;
+import com.ishmuradov.otus.homework15.messagesystem.MessageSystem;
 
 @ServerEndpoint(value = "/cache", configurator = ServletAwareConfig.class)
-public class CacheReviewerEndpoint {
-  final static Logger logger = Logger.getLogger(CacheReviewerEndpoint.class);
-  private static Gson gson = new Gson();
+public class CacheReviewerEndpoint implements FrontendService {
+  private final static Logger logger = Logger.getLogger(CacheReviewerEndpoint.class);
 
   /*
    * Problems with mixing @ServerEndpointand @Autowired, and how to solve them:
@@ -28,35 +31,68 @@ public class CacheReviewerEndpoint {
    * https://stackoverflow.com/questions/17936440/accessing-httpsession-from-
    * httpservletrequest-in-a-web-socket-serverendpoint
    */
-  private UserService userService;
-
+  // private UserService userService;
+  private MessageSystemContext context;
+  private final Address address = new Address();
   private Session wsSession;
 
   @OnOpen
   public void onOpen(Session session, EndpointConfig config) {
-    logger.debug("Websocket: onOpen");
+    logger.info("Websocket: onOpen");
     this.wsSession = session;
     ServletContext servletContext = (ServletContext) config.getUserProperties().get("servletContext");
-    userService = ((AbstractApplicationContext) servletContext.getAttribute("applicationContext"))
-        .getBean("userService", UserService.class);
+    // userService = ((AbstractApplicationContext)
+    // servletContext.getAttribute("applicationContext"))
+    // .getBean("userService", UserService.class);
+    context = ((AbstractApplicationContext) servletContext.getAttribute("applicationContext"))
+        .getBean("messageSystemContext", MessageSystemContext.class);
   }
 
   @OnMessage
   public void onMessage(String message) {
-    logger.debug("Websocket: onMessage");
-    if (!message.equals("getStatistics")) {
-      throw new IllegalArgumentException("Unknown API call: " + message);
-    }
-    wsSession.getAsyncRemote().sendText(gson.toJson(userService.getStatistics()));
+    logger.info("Websocket: onMessage");
+    handleRequest(message);
   }
 
   @OnClose
   public void onClose() {
-    logger.debug("Websocket: onClose");
+    logger.info("Websocket: onClose");
   }
 
   @OnError
   public void onError(Throwable throwable) {
-    logger.debug("Websocket: onError");
+    logger.info("Websocket: onError");
+  }
+
+  @Override
+  public Address getAddress() {
+    return address;
+  }
+
+  @Override
+  public MessageSystem getMS() {
+    return context.getMessageSystem();
+  }
+
+  @PostConstruct
+  @Override
+  public void init() {
+    context.setFrontAddress(address);
+    context.getMessageSystem().addAddressee(this);
+  }
+
+  @Override
+  public void handleRequest(String request) {
+    if (!request.equals("getStatistics")) {
+      throw new IllegalArgumentException("Unknown API call: " + request);
+    }
+    Message message = new MsgGetCacheStatistics(getAddress(), context.getDbAddress());
+    context.getMessageSystem().sendMessage(message);
+
+  }
+
+  @Override
+  public void handleResponse(String response) {
+    wsSession.getAsyncRemote().sendText(response);
   }
 }
